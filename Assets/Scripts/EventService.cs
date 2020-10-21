@@ -1,10 +1,16 @@
+using System.Collections;
 using UnityEngine;
 
 public class EventService : MonoBehaviour
 {
+    [SerializeField]
+    private int _cooldownBeforeSend;
+
+    private Coroutine _eventsSendingCoroutine;
+
     private void Start()
     {
-        Initialize();
+        Initialize(10);
     }
     private void OnDestroy()
     {
@@ -16,12 +22,24 @@ public class EventService : MonoBehaviour
 
     }
 
-    private void Initialize()
+    private void Initialize(int cooldownBeforeSend)
     {
+        _cooldownBeforeSend = cooldownBeforeSend;
 
+        _eventsSendingCoroutine = StartCoroutine(EventsSendingCoroutine(_cooldownBeforeSend));
     }
     private void UnInitialize()
     {
+        StopCoroutine(_eventsSendingCoroutine);
+    }
 
+    private IEnumerator EventsSendingCoroutine(int cooldownBeforeSend)
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(cooldownBeforeSend);
+
+            Debug.Log("Events sent");
+        }
     }
 }
