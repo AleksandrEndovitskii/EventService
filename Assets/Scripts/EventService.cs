@@ -39,6 +39,7 @@ public class EventService : MonoBehaviour
         _trackableEventsJson = JsonUtility.ToJson(_trackableEventsJsonObject);
         //save json to prefs in case of app crash
         PlayerPrefs.SetString(_playerPrefsNameForTrackableEventsJson, _trackableEventsJson);
+        Debug.Log($"Json ({_trackableEventsJson}) saved to player prefs to {_playerPrefsNameForTrackableEventsJson}");
     }
 
     private void Initialize()
