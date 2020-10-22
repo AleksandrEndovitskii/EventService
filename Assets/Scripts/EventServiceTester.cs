@@ -36,7 +36,7 @@ public class EventServiceTester : MonoBehaviour
         {
             yield return new WaitForSeconds(_cooldownBeforeTrackEventSecondsCount);
 
-            Debug.Log("TrackEvent");
+            _eventService.TrackEvent("testType", "testData");
         }
     }
 }

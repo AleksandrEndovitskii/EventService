@@ -1,10 +1,13 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EventService : MonoBehaviour
 {
     [SerializeField]
     private int _cooldownBeforeSend;
+
+    private List<KeyValuePair<string, string>> _trackEvents = new List<KeyValuePair<string, string>>();
 
     private Coroutine _eventsSendingCoroutine;
 
@@ -19,7 +22,9 @@ public class EventService : MonoBehaviour
 
     public void TrackEvent(string type, string data)
     {
+        _trackEvents.Add(new KeyValuePair<string, string>(type, data));
 
+        Debug.Log($"Track event with type({type}) and data({data})");
     }
 
     private void Initialize(int cooldownBeforeSend)
@@ -39,7 +44,14 @@ public class EventService : MonoBehaviour
         {
             yield return new WaitForSeconds(cooldownBeforeSend);
 
-            Debug.Log("Events sent");
+            if (_trackEvents.Count == 0)
+            {
+                continue;
+            }
+
+            Debug.Log($"Events({_trackEvents.Count}) sent");
+
+            _trackEvents.Clear();
         }
     }
 }
