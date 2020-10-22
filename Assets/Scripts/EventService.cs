@@ -39,12 +39,25 @@ public class EventService : MonoBehaviour
         _trackableEventsJson = JsonUtility.ToJson(_trackableEventsJsonObject);
         //save json to prefs in case of app crash
         PlayerPrefs.SetString(_playerPrefsNameForTrackableEventsJson, _trackableEventsJson);
-        Debug.Log($"Json ({_trackableEventsJson}) saved to player prefs to {_playerPrefsNameForTrackableEventsJson}");
+        Debug.Log($"Json ({_trackableEventsJson}) saved to key({_playerPrefsNameForTrackableEventsJson}) in player prefs");
     }
 
     private void Initialize()
     {
-        _trackableEventsJsonObject = new TrackableEventsJsonObject();
+        _playerPrefsNameForTrackableEventsJson = PlayerPrefs.GetString(_playerPrefsNameForTrackableEventsJson, "");
+        if (string.IsNullOrEmpty(_playerPrefsNameForTrackableEventsJson))
+        {
+            _trackableEventsJsonObject = new TrackableEventsJsonObject();
+
+            Debug.Log($"No json with key({_playerPrefsNameForTrackableEventsJson}) was loaded  from player prefs - " +
+                      "created a new json object");
+        }
+        else
+        {
+            _trackableEventsJsonObject = JsonUtility.FromJson<TrackableEventsJsonObject>(_playerPrefsNameForTrackableEventsJson);
+
+            Debug.Log($@"Json with key({_playerPrefsNameForTrackableEventsJson}) was loaded from player prefs - restored a json object({_trackableEventsJsonObject})");
+        }
 
         _eventsSendingCoroutine = StartCoroutine(EventsSendingCoroutine(_cooldownBeforeSend));
     }
@@ -75,6 +88,7 @@ public class EventService : MonoBehaviour
         //clear data about sent trackable events
         _trackableEventsJsonObject = new TrackableEventsJsonObject();
         PlayerPrefs.SetString(_playerPrefsNameForTrackableEventsJson, "");
+        Debug.Log($"Json with key({_playerPrefsNameForTrackableEventsJson}) cleared from player prefs sent");
     }
 
     private void OnFail(UnityWebRequest unityWebRequest)
