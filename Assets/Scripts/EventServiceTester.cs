@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EventServiceTester : MonoBehaviour
@@ -6,9 +7,9 @@ public class EventServiceTester : MonoBehaviour
     [SerializeField]
     private EventService _eventService;
     [SerializeField]
-    private int _testTrackEventsCount = 3;
-    [SerializeField]
     private int _cooldownBeforeTrackEventSecondsCount = 1;
+
+    private List<TrackableEvent> _testTrackEvents = new List<TrackableEvent>();
 
     private Coroutine _testTrackEventCoroutine;
 
@@ -23,6 +24,10 @@ public class EventServiceTester : MonoBehaviour
 
     private void Initialize()
     {
+        _testTrackEvents.Add(new TrackableEvent("levelStart", "level:3"));
+        _testTrackEvents.Add(new TrackableEvent("rewardReceive", "2"));
+        _testTrackEvents.Add(new TrackableEvent("coinSpend", "1"));
+
         _testTrackEventCoroutine = StartCoroutine(TestTrackEventCoroutine());
     }
     private void UnInitialize()
@@ -32,11 +37,11 @@ public class EventServiceTester : MonoBehaviour
 
     private IEnumerator TestTrackEventCoroutine()
     {
-        for (var i = 0; i < _testTrackEventsCount; i++)
+        foreach (var trackableEvent in _testTrackEvents)
         {
             yield return new WaitForSeconds(_cooldownBeforeTrackEventSecondsCount);
 
-            _eventService.TrackEvent("testType", "testData");
+            _eventService.TrackEvent(trackableEvent.type, trackableEvent.data);
         }
     }
 }
