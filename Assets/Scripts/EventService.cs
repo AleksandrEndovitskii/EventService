@@ -82,7 +82,7 @@ public class EventService : MonoBehaviour
     }
 
     //https://forum.unity.com/threads/posting-json-through-unitywebrequest.476254/
-    IEnumerator Post(string url, string bodyJsonString,
+    private IEnumerator Post(string url, string bodyJsonString,
         Action<UnityWebRequest> onSuccess = null, Action<UnityWebRequest> onFail = null)
     {
         var request = new UnityWebRequest(url, "POST");
