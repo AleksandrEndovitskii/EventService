@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EventService : MonoBehaviour
@@ -7,7 +6,7 @@ public class EventService : MonoBehaviour
     [SerializeField]
     private int _cooldownBeforeSend;
 
-    private List<KeyValuePair<string, string>> _trackEvents = new List<KeyValuePair<string, string>>();
+    private TrackableEventsJsonObject _trackableEventsJsonObject;
 
     private Coroutine _eventsSendingCoroutine;
 
@@ -22,13 +21,16 @@ public class EventService : MonoBehaviour
 
     public void TrackEvent(string type, string data)
     {
-        _trackEvents.Add(new KeyValuePair<string, string>(type, data));
+        var trackableEvent = new TrackableEvent(type, data);
+        _trackableEventsJsonObject.events.Add(trackableEvent);
 
         Debug.Log($"Track event with type({type}) and data({data})");
     }
 
     private void Initialize(int cooldownBeforeSend)
     {
+        _trackableEventsJsonObject = new TrackableEventsJsonObject();
+
         _cooldownBeforeSend = cooldownBeforeSend;
 
         _eventsSendingCoroutine = StartCoroutine(EventsSendingCoroutine(_cooldownBeforeSend));
@@ -44,14 +46,14 @@ public class EventService : MonoBehaviour
         {
             yield return new WaitForSeconds(cooldownBeforeSend);
 
-            if (_trackEvents.Count == 0)
+            if (_trackableEventsJsonObject.events.Count == 0)
             {
                 continue;
             }
 
-            Debug.Log($"Events({_trackEvents.Count}) sent");
+            Debug.Log($"Events({_trackableEventsJsonObject.events.Count}) sent");
 
-            _trackEvents.Clear();
+            _trackableEventsJsonObject = new TrackableEventsJsonObject();
         }
     }
 }
