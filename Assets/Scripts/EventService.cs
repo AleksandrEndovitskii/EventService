@@ -50,21 +50,6 @@ public class EventService : MonoBehaviour
         StopCoroutine(_eventsSendingCoroutine);
     }
 
-    private IEnumerator EventsSendingCoroutine(int cooldownBeforeSend)
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(cooldownBeforeSend);
-
-            if (_trackableEventsJsonObject.events.Count == 0)
-            {
-                continue;
-            }
-
-            StartCoroutine(Post(serverUrl, _trackableEventsJson, OnSuccess, OnFail));
-        }
-    }
-
     private void OnSuccess(UnityWebRequest unityWebRequest)
     {
         Debug.Log($"Events({_trackableEventsJsonObject.events.Count}) sent");
@@ -108,6 +93,21 @@ public class EventService : MonoBehaviour
         _trackableEventsJsonObject = new TrackableEventsJsonObject();
         PlayerPrefs.SetString(_playerPrefsNameForTrackableEventsJson, "");
         Debug.Log($"Json with key({_playerPrefsNameForTrackableEventsJson}) cleared from player prefs sent");
+    }
+
+    private IEnumerator EventsSendingCoroutine(int cooldownBeforeSend)
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(cooldownBeforeSend);
+
+            if (_trackableEventsJsonObject.events.Count == 0)
+            {
+                continue;
+            }
+
+            StartCoroutine(Post(serverUrl, _trackableEventsJson, OnSuccess, OnFail));
+        }
     }
 
     //https://forum.unity.com/threads/posting-json-through-unitywebrequest.476254/
