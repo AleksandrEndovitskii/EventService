@@ -5,6 +5,8 @@ public class EventService : MonoBehaviour
 {
     [SerializeField]
     private int _cooldownBeforeSend = 3;
+    [SerializeField]
+    private string serverUrl = "http://localhost:3000/...";
 
     private TrackableEventsJsonObject _trackableEventsJsonObject;
 
