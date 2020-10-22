@@ -49,7 +49,8 @@ public class EventService : MonoBehaviour
                 continue;
             }
 
-            Debug.Log($"Events({_trackableEventsJsonObject.events.Count}) sent");
+            var json = JsonUtility.ToJson(_trackableEventsJsonObject);
+            Debug.Log($"Events({_trackableEventsJsonObject.events.Count}) sent as json: ({json})");
 
             _trackableEventsJsonObject = new TrackableEventsJsonObject();
         }
