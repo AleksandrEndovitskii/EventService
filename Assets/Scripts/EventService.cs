@@ -92,7 +92,7 @@ public class EventService : MonoBehaviour
         //clear data about sent trackable events
         _trackableEventsJsonObject = new TrackableEventsJsonObject();
         PlayerPrefs.SetString(_playerPrefsNameForTrackableEventsJson, "");
-        Debug.Log($"Json with key({_playerPrefsNameForTrackableEventsJson}) cleared from player prefs sent");
+        Debug.Log($"Json with key({_playerPrefsNameForTrackableEventsJson}) cleared from player prefs");
     }
 
     private IEnumerator EventsSendingCoroutine(int cooldownBeforeSend)
