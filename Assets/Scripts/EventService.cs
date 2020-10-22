@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Text;
 using UnityEngine;
@@ -13,6 +14,8 @@ public class EventService : MonoBehaviour
     private TrackableEventsJsonObject _trackableEventsJsonObject;
 
     private Coroutine _eventsSendingCoroutine;
+
+    private long _responseCodeOFSuccessfulPost = 200; //OK
 
     private void Start()
     {
@@ -54,14 +57,26 @@ public class EventService : MonoBehaviour
             }
 
             var json = JsonUtility.ToJson(_trackableEventsJsonObject);
-            Debug.Log($"Events({_trackableEventsJsonObject.events.Count}) sent as json: ({json})");
 
-            _trackableEventsJsonObject = new TrackableEventsJsonObject();
+            StartCoroutine(Post(serverUrl, json, OnSuccess, OnFail));
         }
     }
 
+    private void OnSuccess(UnityWebRequest unityWebRequest)
+    {
+        Debug.Log($"Events({_trackableEventsJsonObject.events.Count}) sent");
+
+        _trackableEventsJsonObject = new TrackableEventsJsonObject();
+    }
+
+    private void OnFail(UnityWebRequest unityWebRequest)
+    {
+
+    }
+
     //https://forum.unity.com/threads/posting-json-through-unitywebrequest.476254/
-    IEnumerator Post(string url, string bodyJsonString)
+    IEnumerator Post(string url, string bodyJsonString,
+        Action<UnityWebRequest> onSuccess = null, Action<UnityWebRequest> onFail = null)
     {
         var request = new UnityWebRequest(url, "POST");
         byte[] bodyRaw = Encoding.UTF8.GetBytes(bodyJsonString);
@@ -71,6 +86,21 @@ public class EventService : MonoBehaviour
 
         yield return request.Send();
 
-        Debug.Log("Status Code: " + request.responseCode);
+        Debug.Log("Request response code: " + request.responseCode);
+
+        if (request.isNetworkError ||
+            request.isHttpError ||
+            request.responseCode != _responseCodeOFSuccessfulPost)
+        {
+            Debug.Log("Data sending failed with error: " + request.error);
+
+            onFail?.Invoke(request);
+        }
+        else
+        {
+            Debug.Log("Data sending completed");
+
+            onSuccess?.Invoke(request);
+        }
     }
 }
