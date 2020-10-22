@@ -36,28 +36,12 @@ public class EventService : MonoBehaviour
 
         Debug.Log($"Track event with type({type}) and data({data})");
 
-        _trackableEventsJson = JsonUtility.ToJson(_trackableEventsJsonObject);
-        //save json to prefs in case of app crash
-        PlayerPrefs.SetString(_playerPrefsNameForTrackableEventsJson, _trackableEventsJson);
-        Debug.Log($"Json ({_trackableEventsJson}) saved to key({_playerPrefsNameForTrackableEventsJson}) in player prefs");
+        SaveTrackableEventsToPlayerPrefs();
     }
 
     private void Initialize()
     {
-        _playerPrefsNameForTrackableEventsJson = PlayerPrefs.GetString(_playerPrefsNameForTrackableEventsJson, "");
-        if (string.IsNullOrEmpty(_playerPrefsNameForTrackableEventsJson))
-        {
-            _trackableEventsJsonObject = new TrackableEventsJsonObject();
-
-            Debug.Log($"No json with key({_playerPrefsNameForTrackableEventsJson}) was loaded  from player prefs - " +
-                      "created a new json object");
-        }
-        else
-        {
-            _trackableEventsJsonObject = JsonUtility.FromJson<TrackableEventsJsonObject>(_playerPrefsNameForTrackableEventsJson);
-
-            Debug.Log($@"Json with key({_playerPrefsNameForTrackableEventsJson}) was loaded from player prefs - restored a json object({_trackableEventsJsonObject})");
-        }
+        LoadTrackableEventsFromPlayerPrefs();
 
         _eventsSendingCoroutine = StartCoroutine(EventsSendingCoroutine(_cooldownBeforeSend));
     }
@@ -85,15 +69,45 @@ public class EventService : MonoBehaviour
     {
         Debug.Log($"Events({_trackableEventsJsonObject.events.Count}) sent");
 
+        ClearTrackableEventsFromPlayerPrefs();
+    }
+    private void OnFail(UnityWebRequest unityWebRequest)
+    {
+
+    }
+
+    private void SaveTrackableEventsToPlayerPrefs()
+    {
+        _trackableEventsJson = JsonUtility.ToJson(_trackableEventsJsonObject);
+        //save json to prefs in case of app crash
+        PlayerPrefs.SetString(_playerPrefsNameForTrackableEventsJson, _trackableEventsJson);
+        Debug.Log($"Json ({_trackableEventsJson}) saved to key({_playerPrefsNameForTrackableEventsJson}) in player prefs");
+    }
+    private void LoadTrackableEventsFromPlayerPrefs()
+    {
+        _trackableEventsJson = PlayerPrefs.GetString(_playerPrefsNameForTrackableEventsJson, "");
+        if (string.IsNullOrEmpty(_trackableEventsJson))
+        {
+            _trackableEventsJsonObject = new TrackableEventsJsonObject();
+
+            Debug.Log($"No json with key({_playerPrefsNameForTrackableEventsJson}) was loaded  from player prefs - " +
+                      "created a new json object");
+        }
+        else
+        {
+            _trackableEventsJsonObject =
+                JsonUtility.FromJson<TrackableEventsJsonObject>(_playerPrefsNameForTrackableEventsJson);
+
+            Debug.Log($"Json with key({_playerPrefsNameForTrackableEventsJson}) was loaded from player prefs - " +
+                      $"restored a json object({_trackableEventsJsonObject})");
+        }
+    }
+    private void ClearTrackableEventsFromPlayerPrefs()
+    {
         //clear data about sent trackable events
         _trackableEventsJsonObject = new TrackableEventsJsonObject();
         PlayerPrefs.SetString(_playerPrefsNameForTrackableEventsJson, "");
         Debug.Log($"Json with key({_playerPrefsNameForTrackableEventsJson}) cleared from player prefs sent");
-    }
-
-    private void OnFail(UnityWebRequest unityWebRequest)
-    {
-
     }
 
     //https://forum.unity.com/threads/posting-json-through-unitywebrequest.476254/
