@@ -4,7 +4,7 @@ using UnityEngine;
 public class EventService : MonoBehaviour
 {
     [SerializeField]
-    private int _cooldownBeforeSend = 10;
+    private int _cooldownBeforeSend = 3;
 
     private TrackableEventsJsonObject _trackableEventsJsonObject;
 
