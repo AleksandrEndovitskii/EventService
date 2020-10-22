@@ -84,7 +84,7 @@ public class EventService : MonoBehaviour
                 JsonUtility.FromJson<TrackableEventsJsonObject>(_trackableEventsJson);
 
             Debug.Log($"Json with key({_playerPrefsNameForTrackableEventsJson}) was loaded from player prefs - " +
-                      $"restored a json object({_trackableEventsJsonObject})");
+                      $"restored a json object({_trackableEventsJson})");
         }
     }
     private void ClearTrackableEventsFromPlayerPrefs()
