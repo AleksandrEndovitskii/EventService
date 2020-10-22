@@ -6,7 +6,7 @@ public class EventServiceTester : MonoBehaviour
     [SerializeField]
     private EventService _eventService;
     [SerializeField]
-    private int _testTrackEventsCount = 10;
+    private int _testTrackEventsCount = 3;
     [SerializeField]
     private int _cooldownBeforeTrackEventSecondsCount = 1;
 
