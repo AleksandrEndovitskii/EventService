@@ -4,7 +4,7 @@ using UnityEngine;
 public class EventService : MonoBehaviour
 {
     [SerializeField]
-    private int _cooldownBeforeSend;
+    private int _cooldownBeforeSend = 10;
 
     private TrackableEventsJsonObject _trackableEventsJsonObject;
 
@@ -12,7 +12,7 @@ public class EventService : MonoBehaviour
 
     private void Start()
     {
-        Initialize(10);
+        Initialize();
     }
     private void OnDestroy()
     {
@@ -27,11 +27,9 @@ public class EventService : MonoBehaviour
         Debug.Log($"Track event with type({type}) and data({data})");
     }
 
-    private void Initialize(int cooldownBeforeSend)
+    private void Initialize()
     {
         _trackableEventsJsonObject = new TrackableEventsJsonObject();
-
-        _cooldownBeforeSend = cooldownBeforeSend;
 
         _eventsSendingCoroutine = StartCoroutine(EventsSendingCoroutine(_cooldownBeforeSend));
     }
