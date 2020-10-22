@@ -10,8 +10,11 @@ public class EventService : MonoBehaviour
     private int _cooldownBeforeSend = 3;
     [SerializeField]
     private string serverUrl = "http://localhost:3000/..."; //TODO: add correct server ulr here
+    [SerializeField]
+    private string _playerPrefsNameForTrackableEventsJson = "_trackableEventsJson";
 
     private TrackableEventsJsonObject _trackableEventsJsonObject;
+    private string _trackableEventsJson;
 
     private Coroutine _eventsSendingCoroutine;
 
@@ -32,6 +35,10 @@ public class EventService : MonoBehaviour
         _trackableEventsJsonObject.events.Add(trackableEvent);
 
         Debug.Log($"Track event with type({type}) and data({data})");
+
+        _trackableEventsJson = JsonUtility.ToJson(_trackableEventsJsonObject);
+        //save json to prefs in case of app crash
+        PlayerPrefs.SetString(_playerPrefsNameForTrackableEventsJson, _trackableEventsJson);
     }
 
     private void Initialize()
@@ -56,9 +63,7 @@ public class EventService : MonoBehaviour
                 continue;
             }
 
-            var json = JsonUtility.ToJson(_trackableEventsJsonObject);
-
-            StartCoroutine(Post(serverUrl, json, OnSuccess, OnFail));
+            StartCoroutine(Post(serverUrl, _trackableEventsJson, OnSuccess, OnFail));
         }
     }
 
@@ -66,7 +71,9 @@ public class EventService : MonoBehaviour
     {
         Debug.Log($"Events({_trackableEventsJsonObject.events.Count}) sent");
 
+        //clear data about sent trackable events
         _trackableEventsJsonObject = new TrackableEventsJsonObject();
+        PlayerPrefs.SetString(_playerPrefsNameForTrackableEventsJson, "");
     }
 
     private void OnFail(UnityWebRequest unityWebRequest)
